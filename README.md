@@ -20,6 +20,15 @@ Configure these public Supabase connection values in Vercel and local developmen
 
 Copy `.env.example` to `.env.local` for local development. If the variables are absent, the API returns a clear 503 response rather than pretending the request was saved. Quote submissions are private but there is not yet an authenticated admin queue to review/respond to them; operations must currently use the authorized Supabase console. Add CAPTCHA/Bot protection and a reviewed privacy/retention policy before broad public promotion.
 
+## Buyer cart preview
+
+The marketplace product cards support adding catalogue items to a browser-local cart. Quantities can be changed and lines removed or cleared; the header count follows cart updates. This is a UI preview only:
+
+- Cart state is stored in the current browser's local storage and is not shared across devices or accounts.
+- The displayed subtotal is only an estimate based on numeric listed prices; supplier quotes, negotiated pricing, taxes, freight, and stock availability are not included.
+- No inventory is reserved and no order, payment, or seller commitment is created.
+- The next available action is a supplier quote enquiry. Production checkout requires authenticated buyer identity, server-side price and stock validation, order creation, idempotency, payment/shipping integration, and audit/reconciliation workflows.
+
 ## Technology
 
 - Next.js App Router, React, TypeScript
