@@ -28,9 +28,9 @@ export default function Home() {
       <nav aria-label="Workspace navigation">
         <a className="active" href="#overview"><span>◫</span> Overview</a>
         <Link href="/inventory"><span>▦</span> Inventory</Link>
-        <a href="#modules"><span>◇</span> Product catalogue</a>
+        <Link href="/catalogue"><span>◇</span> Product catalogue</Link>
         <a href="#modules"><span>⇄</span> Orders &amp; fulfilment</a>
-        <a href="#modules"><span>✓</span> Compliance reviews</a>
+        <Link href="/catalogue"><span>✓</span> Compliance reviews</Link>
       </nav>
       <p className="nav-label">MANAGEMENT</p>
       <nav aria-label="Management navigation">
@@ -59,7 +59,7 @@ export default function Home() {
           <section className="panel activity">
             <div className="panel-head"><div><h2>Operational priorities</h2><p>Examples of tasks the live dashboard will surface</p></div><span className="count">3</span></div>
             <div className="task"><span className="task-icon amber">!</span><div><strong>Expiry risk</strong><p>Udder Care Wash · 16 sample units</p><small>Inventory · LOT-26-019</small></div><Link className="arrow" href="/inventory">›</Link></div>
-            <div className="task"><span className="task-icon blue">▤</span><div><strong>Catalogue review</strong><p>Sample queue needs review</p><small>Catalogue · Not connected</small></div><a className="arrow" href="#modules" aria-label="Catalogue module status">›</a></div>
+            <div className="task"><span className="task-icon blue">▤</span><div><strong>Catalogue review</strong><p>Sample queue needs review</p><small>Catalogue · Not connected</small></div><Link className="arrow" href="/catalogue" aria-label="Open catalogue preview">›</Link></div>
             <div className="task"><span className="task-icon purple">↻</span><div><strong>Replenishment</strong><p>Connector stock is below sample threshold</p><small>Inventory · Illustrative</small></div><Link className="arrow" href="/inventory">›</Link></div>
             <Link className="secondary full" href="/inventory">Review inventory →</Link>
           </section>
