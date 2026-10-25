@@ -25,5 +25,5 @@ test("Shiprocket documentation warns that live order actions need credentials an
   assert.match(readme, /Shiprocket/);
   assert.match(readme, /SHIPROCKET_EMAIL/);
   assert.match(readme, /SHIPROCKET_PASSWORD/);
-  assert.match(readme, /not enabled until/i);
+  assert.match(readme, /have not been enabled/i);
 });
