@@ -77,7 +77,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   const products = catalog.products;
   const visibleProducts = query ? products.filter((product) => [product.name, product.type, product.pack, product.id].some((value) => value.toLocaleLowerCase().includes(query))) : products;
   return <main className="marketplace">
-    <div className="market-topline"><span>Built for India’s dairy & livestock supply chain</span><span>Need help? <a href="mailto:support@pranex.example">Support contact not configured</span></div>
+    <div className="market-topline"><span>Built for India’s dairy & livestock supply chain</span><span>Need help? Support contact not configured</span></div>
     <header className="market-header">
       <Link href="/marketplace" className="market-brand" aria-label="Pranex marketplace home"><span className="market-logo">P</span><span>pranex<small>TRADE WITH CONFIDENCE</small></span></Link>
       <form className="market-search" action="/marketplace" method="get"><span aria-hidden="true">⌕</span><input name="q" aria-label="Search products and suppliers" placeholder="Search products, brands, or suppliers" defaultValue={params.q ?? ""} /><button type="submit">Search</button></form>
