@@ -45,8 +45,7 @@ export default function ProductGrid({ products }: { products: MarketplaceProduct
       const current = readCart();
       const existing = current.find((line) => line.id === product.id);
       if (existing) return current.map((line) => line.id === product.id ? { ...line, quantity: line.quantity + 1 } : line);
-      const { type: _type, tag: _tag, ...line } = product;
-      return [...current, { ...line, quantity: 1 }];
+      return [...current, { id: product.id, name: product.name, pack: product.pack, price: product.price, unit: product.unit, moq: product.moq, tone: product.tone, initials: product.initials, quantity: 1 }];
     })();
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     setCart(next);
