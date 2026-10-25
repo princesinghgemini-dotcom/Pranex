@@ -23,6 +23,7 @@ function readCart(): CartLine[] {
 
 function saveCart(lines: CartLine[]) {
   try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(lines)); } catch { /* UI still reflects this session. */ }
+  window.dispatchEvent(new Event("pranex-cart-updated"));
 }
 
 function priceValue(value: string): number | null {
