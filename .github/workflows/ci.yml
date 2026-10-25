@@ -40,6 +40,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Run security invariant tests
         run: npm test
+      - name: Lint
+        run: npm run lint
       - name: Validate SQL migration on PostgreSQL
         run: |
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/bootstrap.sql
