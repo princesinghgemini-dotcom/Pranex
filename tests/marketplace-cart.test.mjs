@@ -24,7 +24,7 @@ test("cart quantities are bounded and removal and clear actions exist", () => {
   assert.match(cart, /value > 9999/);
   assert.match(cart, /function remove/);
   assert.match(cart, /function clear/);
-  assert.match(cart, /type="number" min={1} max={9999}/);
+  assert.ok(cart.includes('type="number" min={1} max={9999}'));
 });
 
 test("cart badge reacts to same-tab and cross-tab changes", () => {
