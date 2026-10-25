@@ -41,7 +41,7 @@ export default function QuoteRequestForm() {
           website: data.get("website"),
         }),
       });
-      const result = await response.json() as { error?: string; requestId?: string | null };
+      const result = await response.json() as { ok?: boolean; error?: string; requestId?: string | null };
       if (!response.ok || !result.ok) {
         setStatus({ kind: "error", message: result.error ?? "We couldn't save your request. Please try again." });
         return;
