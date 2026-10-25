@@ -58,3 +58,18 @@ test("batch writes are only available through the validated RPC", () => {
   assert.match(migration, /revoke insert, update, delete, truncate, references, trigger on public\.inventory_batches from anon, authenticated/i);
   assert.doesNotMatch(migration, /grant insert \(organization_id, sku, product_name, batch_code, expires_on, received_at, created_by\)\s+on public\.inventory_batches to authenticated/i);
 });
+
+
+test("production-schema inventory ledger reuses existing tenant tables and blocks direct writes", async () => {
+  const ledger = await readFile(new URL("../supabase/migrations/20261025120000_inventory_movement_ledger.sql", import.meta.url), "utf8");
+  assert.match(ledger, /references public\.product_batches\(id\)/i);
+  assert.match(ledger, /public\.org_members/);
+  assert.match(ledger, /m\.role in \('owner', 'admin'\)/);
+  assert.match(ledger, /alter table public\.inventory_movements enable row level security/i);
+  assert.match(ledger, /revoke all on public\.inventory_movements from public, anon, authenticated/i);
+  assert.match(ledger, /grant select on public\.inventory_movements to authenticated/i);
+  assert.match(ledger, /update public\.product_batches\s+set stock_quantity = stock_quantity \+ p_quantity/i);
+  assert.match(ledger, /Idempotency key reused with different receipt parameters/i);
+  assert.match(ledger, /insert into public\.audit_logs/i);
+  assert.match(ledger, /grant execute on function public\.record_inventory_receipt[\s\S]*to authenticated/i);
+});
