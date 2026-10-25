@@ -49,3 +49,14 @@ Before production use, complete and verify:
 ## Status
 
 The GitHub branch contains a direct rebuild. Historical commits that existed only in the exhausted remote workspace have not been reconstructed. No production deployment is implied by these commits.
+
+## Shiprocket shipping integration
+
+The server-only integration client lives in `lib/shiprocket.ts` and supports authenticated AWB tracking and courier serviceability quotes. It uses Shiprocket's documented external API base URL and API-user login endpoint. Provider credentials and bearer tokens must never be sent to the browser or committed to source control.
+
+Configure these server environment variables in a secret manager or the deployment environment (never as `NEXT_PUBLIC_*`):
+
+- `SHIPROCKET_EMAIL`: Shiprocket API-user email created under Settings → API.
+- `SHIPROCKET_PASSWORD`: corresponding API-user password.
+
+The current implementation is an integration foundation only: no Shiprocket credentials are configured in this repository, and no live account calls, order creation, courier assignment, pickup booking, label generation, webhook processing, or reconciliation have been enabled. Before production, add authenticated role checks, order ownership checks, durable idempotency, webhook signature/verification strategy, retry policy, event audit logs, and sandbox/live end-to-end tests. A successful provider API response must not by itself mark an order paid or delivered.
