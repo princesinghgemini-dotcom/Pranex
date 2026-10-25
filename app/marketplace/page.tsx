@@ -50,7 +50,7 @@ async function getCatalog(): Promise<{ products: ProductCard[]; mode: CatalogMod
       const price = variant.mrp_paise == null
         ? "Request price"
         : new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(variant.mrp_paise / 100);
-      const initials = row.name.split(/\\s+/).slice(0, 2).map((part) => part[0]).join("").slice(0, 2);
+      const initials = row.name.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").slice(0, 2);
       return [{
         id: variant.sku || row.id,
         name: row.name,
