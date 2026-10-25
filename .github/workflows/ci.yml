@@ -44,6 +44,7 @@ jobs:
         run: |
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/bootstrap.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261025000100_inventory_ledger_fefo.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/inventory-fefo.integration.sql
       - name: Type-check
         run: npx tsc --noEmit
       - name: Build
