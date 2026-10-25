@@ -63,7 +63,7 @@ export async function POST(request: Request) {
   }
 
   const rawLength = request.headers.get("content-length");
-  if (rawLength !== null && (!/^\\d+$/.test(rawLength) || Number(rawLength) > MAX_BODY_BYTES)) {
+  if (rawLength !== null && (!/^\d+$/.test(rawLength) || Number(rawLength) > MAX_BODY_BYTES)) {
     return NextResponse.json({ error: "Request is too large or has an invalid content length." }, { status: 413 });
   }
 
