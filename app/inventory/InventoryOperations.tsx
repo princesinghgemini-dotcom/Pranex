@@ -136,7 +136,7 @@ export default function InventoryOperations() {
         <>
           <div className="inventory-live-toolbar">
             <span>{batches.length} batch(es) visible under your database permissions · maximum 100 shown</span>
-            <button type="button" onClick={() => { setAccessToken(""); setBatches([]); setStatus({ kind: "info", message: "Signed out of this inventory screen." }); }}>Sign out</button>
+            <button type="button" disabled={Boolean(pendingReceiptKey)} onClick={() => { setAccessToken(""); setBatches([]); setStatus({ kind: "info", message: "Signed out of this inventory screen." }); }}>Sign out</button>
           </div>
           <div className="table-wrap">
             <table><thead><tr><th>Batch</th><th>On hand</th><th>Reserved</th><th>Available</th><th>Expiry</th><th>Warehouse</th></tr></thead>
@@ -153,9 +153,9 @@ export default function InventoryOperations() {
             <label>Batch<select required value={selectedBatch} onChange={event => setSelectedBatch(event.target.value)} disabled={!batches.length || Boolean(pendingReceiptKey)}>
               {batches.map(batch => <option key={batch.id} value={batch.id}>{batch.batch_number} · {batch.stock_quantity} on hand · {batch.expires_on ?? "no expiry"}</option>)}
             </select></label>
-            <label>Received quantity<input type="number" min={1} max={100000000} step={1} required value={quantity} onChange={event => setQuantity(event.target.value)} /></label>
-            <label>Reference / GRN<input maxLength={160} value={reference} onChange={event => setReference(event.target.value)} placeholder="Optional goods receipt reference" /></label>
-            <label>Notes<textarea maxLength={500} rows={2} value={notes} onChange={event => setNotes(event.target.value)} placeholder="Optional receipt notes" /></label>
+            <label>Received quantity<input type="number" min={1} max={100000000} step={1} required disabled={Boolean(pendingReceiptKey)} value={quantity} onChange={event => setQuantity(event.target.value)} /></label>
+            <label>Reference / GRN<input maxLength={160} disabled={Boolean(pendingReceiptKey)} value={reference} onChange={event => setReference(event.target.value)} placeholder="Optional goods receipt reference" /></label>
+            <label>Notes<textarea maxLength={500} rows={2} disabled={Boolean(pendingReceiptKey)} value={notes} onChange={event => setNotes(event.target.value)} placeholder="Optional receipt notes" /></label>
             <button className="primary" type="submit" disabled={busy || !batches.length}>{busy ? "Processing…" : pendingReceiptKey ? "Retry receipt safely" : "Record receipt"}</button>
           </form>
           <p className="ledger-foot">Receipt writes are accepted only for owner/admin roles by the database RPC. A receipt updates the batch quantity, appends an immutable movement and writes an audit event in one transaction.</p>
