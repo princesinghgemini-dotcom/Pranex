@@ -93,3 +93,5 @@
 .catalogue-page footer a{color:#287c56;text-decoration:none}
 @media(max-width:900px){.catalogue-page{padding:24px 18px}.catalogue-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.catalogue-workspace{grid-template-columns:1fr}.listing-detail{min-width:0}}
 @media(max-width:560px){.catalogue-page{padding:20px 12px}.catalogue-header{flex-direction:column}.catalogue-header h1{font-size:25px}.catalogue-notice{align-items:flex-start;flex-direction:column;gap:4px}.catalogue-stats{gap:9px}.catalogue-stats article{padding:13px}.catalogue-stats article>strong{font-size:23px}.catalogue-controls{flex-direction:column}.catalogue-filter select{width:100%;max-width:none}.listing-row{padding:13px 12px}.catalogue-list .panel-head{padding:16px 12px}.catalogue-page footer{flex-direction:column}}
+
+.nav-pending{display:block;margin:3px 0 0 25px;color:#9aa59f;font-size:9px;font-weight:400}
