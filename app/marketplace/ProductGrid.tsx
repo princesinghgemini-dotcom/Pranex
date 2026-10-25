@@ -49,6 +49,7 @@ export default function ProductGrid({ products }: { products: MarketplaceProduct
     })();
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     setCart(next);
+    window.dispatchEvent(new Event("pranex-cart-updated"));
     setAddedId(product.id);
   }
 
