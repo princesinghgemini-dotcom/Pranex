@@ -9,6 +9,17 @@ Pranex is an early-stage commerce operations workspace for agri and veterinary s
 - Supabase SQL foundation for organization membership, batch records, append-only inventory movements, tenant-scoped row policies, and a validated receipt RPC.
 - Native Node.js tests for core security invariants in the migration.
 
+## Marketplace quote enquiries
+
+The buyer quote form now submits to `POST /api/marketplace/quotes` and stores enquiries through the Supabase `submit_marketplace_quote` RPC. The database validates field lengths, Indian mobile format, unit and quantity bounds, explicit contact consent, idempotency keys, and a three-request-per-phone rolling 24-hour limit. The table has RLS enabled, no public read policy, and no direct client table grants.
+
+Configure these public Supabase connection values in Vercel and local development:
+
+- `NEXT_PUBLIC_SUPABASE_URL`: the Supabase project URL.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: the publishable/legacy anon key. Never use a service-role key in this variable.
+
+Copy `.env.example` to `.env.local` for local development. If the variables are absent, the API returns a clear 503 response rather than pretending the request was saved. Quote submissions are private but there is not yet an authenticated admin queue to review/respond to them; operations must currently use the authorized Supabase console. Add CAPTCHA/Bot protection and a reviewed privacy/retention policy before broad public promotion.
+
 ## Technology
 
 - Next.js App Router, React, TypeScript
@@ -32,7 +43,7 @@ The dashboard uses sample data. Do not treat sample counts as live inventory, an
 - Inventory movement rows are designed as append-only records; corrections should be represented as compensating movements, not edits to historical rows.
 - The receipt RPC derives the user from `auth.uid()` and checks membership/role before writing.
 - Batch balance is calculated from movement deltas rather than a mutable balance field.
-- FEFO is currently a presentation ordering in the UI. Order allocation must be implemented as a transaction-safe, row-locking database workflow before it can be relied on for fulfilment.
+- A transaction-safe FEFO allocation RPC with row locks and idempotency exists in the SQL foundation. It is not yet connected to a live checkout/order-fulfilment workflow, so the UI's FEFO ordering remains informational.
 - Idempotency and concurrent receipt behavior require integration tests against PostgreSQL before production use.
 - The migration creates a minimal `organizations` and `organization_members` schema. If integrating into an existing database, reconcile these definitions with the live schema before applying; do not blindly apply over a separately evolved schema.
 
@@ -42,9 +53,9 @@ Before production use, complete and verify:
 1. Authenticated end-to-end tenant isolation tests for every exposed table and RPC.
 2. PostgreSQL migration execution and security advisor review.
 3. Transactional FEFO allocation with row locks, no-negative-stock enforcement, and idempotent order fulfilment.
-4. Real API integration, audit logging, input validation, rate limiting, and observability.
+4. Complete authenticated seller/admin/staff APIs, quote triage, audit logging, request-level rate limiting, bot protection, and observability.
 5. Dependency install, lint, TypeScript check, production build, and CI.
-6. Payment, shipping, and order workflows only after provider credentials, signature validation, webhook idempotency, and reconciliation are implemented.
+6. Payment, shipping, and order workflows only after provider credentials, signature validation, webhook idempotency, and reconciliation are implemented. Configure the Supabase public connection variables before enabling quote submissions in production.
 
 ## Status
 
