@@ -126,3 +126,31 @@
 .cart-continue{display:block;text-align:center;margin-top:13px;color:#24764f;font-size:10px;text-decoration:none;font-weight:700}
 @media(max-width:760px){.cart-layout{grid-template-columns:1fr}.cart-line{grid-template-columns:54px minmax(0,1fr) 82px;padding:14px 12px;gap:10px}.cart-line-art{width:52px;height:52px}.cart-line-actions input{width:70px}.cart-preview-notice{align-items:flex-start;flex-direction:column;gap:4px}.product-cart-feedback{align-items:flex-start;flex-direction:column}}
 @media(max-width:430px){.cart-line{grid-template-columns:46px minmax(0,1fr)}.cart-line-art{width:44px;height:44px}.cart-line-actions{grid-column:2;flex-direction:row;align-items:center;justify-content:space-between}.cart-line-actions label{display:flex;align-items:center;gap:7px}.cart-line-actions input{width:62px}}
+
+
+/* Authenticated live inventory operations */
+.inventory-live-panel .inventory-auth-form,.inventory-live-panel .inventory-receipt-form{display:grid;gap:13px;padding:18px}
+.inventory-live-panel .inventory-auth-form{grid-template-columns:repeat(2,minmax(0,1fr));align-items:end}
+.inventory-live-panel label{display:grid;gap:6px;font-size:10px;font-weight:700;color:#52695a;min-width:0}
+.inventory-live-panel input,.inventory-live-panel select,.inventory-live-panel textarea{width:100%;min-width:0;border:1px solid #dce6de;border-radius:7px;padding:10px 11px;font:12px "DM Sans",sans-serif;color:#234334;background:#fbfcfb;outline-color:#7eaa8a}
+.inventory-live-panel button{border:1px solid #dce7de;border-radius:7px;padding:10px 13px;background:#fff;color:#276c4b;font:700 10px "DM Sans",sans-serif;cursor:pointer}
+.inventory-live-panel button:disabled{opacity:.55;cursor:wait}
+.inventory-live-panel button.primary{border-color:#176b4c;background:#176b4c;color:#fff}
+.inventory-live-panel .inventory-auth-form .primary{justify-self:start}
+.inventory-live-panel .inventory-auth-form .ledger-foot{grid-column:1/-1;padding:10px 0;background:transparent;border:0}
+.inventory-live-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;border-bottom:1px solid var(--line);font-size:10px;color:#7b8981}
+.inventory-live-panel .table-wrap{overflow-x:auto}
+.inventory-live-panel table{width:100%;border-collapse:collapse;font-size:10px;white-space:nowrap}
+.inventory-live-panel th{text-align:left;background:#f8faf8;color:#839087;font-size:9px;letter-spacing:.4px;padding:11px 14px}
+.inventory-live-panel td{padding:12px 14px;border-top:1px solid #edf1ed;color:#52675b}
+.inventory-live-panel td strong{display:block;color:#294635}
+.inventory-live-panel td small{display:block;max-width:210px;margin-top:4px;color:#a0aaa3;font-size:8px;overflow:hidden;text-overflow:ellipsis}
+.inventory-live-panel .inventory-receipt-form{grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line)}
+.inventory-live-panel .inventory-receipt-form h3{grid-column:1/-1;margin:0;font:800 14px Manrope,sans-serif;color:#203d30}
+.inventory-live-panel .inventory-receipt-form label:nth-of-type(4){grid-column:1/-1}
+.inventory-live-panel .inventory-receipt-form button{justify-self:start}
+.inventory-live-panel .inventory-live-status{margin:0 18px 16px;padding:11px 13px;border-radius:7px;font-size:10px;line-height:1.6;overflow-wrap:anywhere}
+.inventory-live-panel .inventory-live-status.success{background:#eaf6ed;border:1px solid #c9e8d0;color:#205f36}
+.inventory-live-panel .inventory-live-status.error{background:#fff1ef;border:1px solid #f2d0ca;color:#8e3025}
+.inventory-live-panel .inventory-live-status.info{background:#f1f5f2;border:1px solid #e0e9e2;color:#50665a}
+@media(max-width:700px){.inventory-live-panel .inventory-auth-form,.inventory-live-panel .inventory-receipt-form{grid-template-columns:1fr}.inventory-live-panel .inventory-receipt-form h3,.inventory-live-panel .inventory-receipt-form label:nth-of-type(4),.inventory-live-panel .inventory-auth-form .ledger-foot{grid-column:auto}.inventory-live-toolbar{align-items:flex-start;flex-direction:column}}
