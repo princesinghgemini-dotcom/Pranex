@@ -44,7 +44,7 @@ export default function Home() {
       </div>
     </aside>
     <section className="content" id="overview">
-      <header className="topbar"><div className="breadcrumbs">Workspace <span>/</span> Overview</div><div className="top-actions"><span className="env"><i/> Preview data</span><a className="help" href="#modules">Module status</a></div></header>
+      <header className="topbar"><div className="breadcrumbs">Workspace <span>/</span> Overview</div><div className="top-actions"><span className="env"><i/> Preview data</span><Link className="help" href="/workspaces">Role workspaces ↗</Link></div></header>
       <div className="page">
         <div className="welcome"><div><p className="eyebrow">PRANEX / OPERATIONS</p><h1>Commerce operations overview <span>✳</span></h1><p className="subtitle">A single entry point for inventory and the modules being brought online.</p></div><Link className="primary create-link" href="/inventory#receipt-guidance">＋ Inventory actions</Link></div>
         <div className="notice"><span className="notice-icon">↗</span><div><strong>Preview environment</strong><p>All figures below are illustrative sample data. They are not live tenant metrics, and no inventory changes can be submitted from this dashboard.</p></div><span className="notice-tag">DEMO</span></div>
