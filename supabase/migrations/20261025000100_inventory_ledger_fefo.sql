@@ -154,14 +154,24 @@ begin
       and m.role in ('owner','admin','inventory_manager')
   ) then raise exception 'Inventory manager role required for this organization' using errcode = '42501'; end if;
 
-  if p_idempotency_key is not null and exists (
-    select 1 from public.inventory_movements
-    where organization_id = p_organization_id and idempotency_key = p_idempotency_key
-  ) then
-    select b.id into v_batch_id from public.inventory_batches b
+  if p_idempotency_key is not null then
+    select b.id into v_batch_id
+    from public.inventory_batches b
     join public.inventory_movements m on m.organization_id=b.organization_id and m.batch_id=b.id
-    where m.organization_id=p_organization_id and m.idempotency_key=p_idempotency_key limit 1;
-    return v_batch_id;
+    where m.organization_id=p_organization_id and m.idempotency_key=p_idempotency_key
+      and m.movement_type='receipt';
+    if found then
+      if not exists (
+        select 1 from public.inventory_batches b
+        join public.inventory_movements m on m.organization_id=b.organization_id and m.batch_id=b.id
+        where m.organization_id=p_organization_id and m.idempotency_key=p_idempotency_key
+          and b.sku=trim(p_sku) and b.batch_code=trim(p_batch_code)
+          and m.quantity_delta=p_quantity and b.expires_on is not distinct from p_expires_on
+      ) then
+        raise exception 'Idempotency key reused with different receipt parameters' using errcode = '22023';
+      end if;
+      return v_batch_id;
+    end if;
   end if;
 
   insert into public.inventory_batches
