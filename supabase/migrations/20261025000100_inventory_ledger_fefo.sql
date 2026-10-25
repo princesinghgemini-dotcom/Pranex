@@ -97,7 +97,7 @@ create policy inventory_movements_read_member on public.inventory_movements
 -- Ledger rows are append-only for client roles. Mutations must go through
 -- narrowly scoped server-side workflows or future validated RPCs.
 revoke insert, update, delete, truncate, references, trigger on public.inventory_movements from anon, authenticated;
-revoke update, delete, truncate, references, trigger on public.inventory_batches from anon, authenticated;
+revoke insert, update, delete, truncate, references, trigger on public.inventory_batches from anon, authenticated;
 grant select on public.organizations, public.organization_members, public.inventory_batches, public.inventory_movements to authenticated;
 -- No direct client INSERT grant on inventory_batches: all writes pass through the validated receipt RPC.
 create or replace view public.inventory_batch_balances
