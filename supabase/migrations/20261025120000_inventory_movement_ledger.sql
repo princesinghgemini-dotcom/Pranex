@@ -28,7 +28,7 @@ create policy stock_movements_read_member on public.stock_movements
   for select to authenticated using (
     exists (
       select 1 from public.org_members m
-      where m.org_id = inventory_movements.organization_id
+      where m.org_id = stock_movements.organization_id
         and m.user_id = (select auth.uid())
         and m.is_active = true
     )
