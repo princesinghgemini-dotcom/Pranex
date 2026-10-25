@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ProductGrid from "./ProductGrid";
+import CartCount from "./CartCount";
 
 const categories = [
   { icon: "✳", name: "Animal nutrition", detail: "Minerals, supplements & feed" },
@@ -82,7 +83,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
     <header className="market-header">
       <Link href="/marketplace" className="market-brand" aria-label="Pranex marketplace home"><span className="market-logo">P</span><span>pranex<small>TRADE WITH CONFIDENCE</small></span></Link>
       <form className="market-search" action="/marketplace" method="get"><span aria-hidden="true">⌕</span><input name="q" aria-label="Search products and suppliers" placeholder="Search products, brands, or suppliers" defaultValue={params.q ?? ""} /><button type="submit">Search</button></form>
-      <div className="market-actions"><Link href="/workspaces" className="market-workspaces">Workspaces</Link><Link href="/marketplace/quotes" className="market-quote-link">♧ <span>My quotes</span></Link><Link href="/marketplace/cart" className="market-cart" aria-label="Shopping cart">▣ <span>Cart</span><b>0</b></Link></div>
+      <div className="market-actions"><Link href="/workspaces" className="market-workspaces">Workspaces</Link><Link href="/marketplace/quotes" className="market-quote-link">♧ <span>My quotes</span></Link><Link href="/marketplace/cart" className="market-cart" aria-label="Shopping cart">▣ <span>Cart</span><CartCount /></Link></div>
     </header>
     <nav className="market-nav" aria-label="Main marketplace navigation"><Link href="/marketplace" className="selected">Discover</Link><a href="#categories">Shop by category</a><a href="#products">Popular products</a><a href="#bulk-order">Bulk orders</a><span className="nav-promise">✓ Supplier-led pricing · Business-ready ordering</span></nav>
     <section className="market-hero">
