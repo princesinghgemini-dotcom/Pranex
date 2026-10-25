@@ -13,17 +13,17 @@ test("inventory tables are tenant-scoped and RLS protected", () => {
 });
 
 test("inventory movement history cannot be updated or deleted by client roles", () => {
-  assert.match(migration, /revoke insert, update, delete, truncate, references, trigger on public\.inventory_movements from anon, authenticated/i);
+  assert.match(migration, /revoke insert, update, delete, truncate, references, trigger on public\.stock_movements from anon, authenticated/i);
   assert.match(migration, /create policy inventory_movements_read_member/i);
 });
 
 test("receipt RPC uses a narrow privileged boundary and authenticates tenant membership", () => {
-  assert.match(migration, /function public\.record_inventory_receipt/i);
+  assert.match(migration, /function public\.record_product_batch_receipt/i);
   assert.match(migration, /security definer\s+set search_path = ''/i);
   assert.match(migration, /v_uid uuid := auth\.uid\(\)/i);
   assert.match(migration, /m\.role in \('owner','admin','inventory_manager'\)/i);
-  assert.match(migration, /revoke all on function public\.record_inventory_receipt[\s\S]*from public, anon/i);
-  assert.match(migration, /grant execute on function public\.record_inventory_receipt[\s\S]*to authenticated/i);
+  assert.match(migration, /revoke all on function public\.record_product_batch_receipt[\s\S]*from public, anon/i);
+  assert.match(migration, /grant execute on function public\.record_product_batch_receipt[\s\S]*to authenticated/i);
 });
 
 test("receipt quantity and expiry are validated", () => {
@@ -65,11 +65,11 @@ test("production-schema inventory ledger reuses existing tenant tables and block
   assert.match(ledger, /references public\.product_batches\(id\)/i);
   assert.match(ledger, /public\.org_members/);
   assert.match(ledger, /m\.role in \('owner', 'admin'\)/);
-  assert.match(ledger, /alter table public\.inventory_movements enable row level security/i);
-  assert.match(ledger, /revoke all on public\.inventory_movements from public, anon, authenticated/i);
-  assert.match(ledger, /grant select on public\.inventory_movements to authenticated/i);
+  assert.match(ledger, /alter table public\.stock_movements enable row level security/i);
+  assert.match(ledger, /revoke all on public\.stock_movements from public, anon, authenticated/i);
+  assert.match(ledger, /grant select on public\.stock_movements to authenticated/i);
   assert.match(ledger, /update public\.product_batches\s+set stock_quantity = stock_quantity \+ p_quantity/i);
   assert.match(ledger, /Idempotency key reused with different receipt parameters/i);
   assert.match(ledger, /insert into public\.audit_logs/i);
-  assert.match(ledger, /grant execute on function public\.record_inventory_receipt[\s\S]*to authenticated/i);
+  assert.match(ledger, /grant execute on function public\.record_product_batch_receipt[\s\S]*to authenticated/i);
 });
