@@ -55,6 +55,9 @@ test("quote form is connected to a validated API and enforces contact consent", 
   assert.match(form, /role=\{status.kind === "error" \? "alert" : "status"\}/);
   assert.match(route, /submit_marketplace_quote/);
   assert.match(route, /content-length/);
+  assert.match(route, /readLimitedBody/);
+  assert.match(route, /total > MAX_BODY_BYTES/);
+  assert.match(route, /Invalid request origin/);
   assert.match(route, /Cross-origin submission is not allowed/);
   assert.match(migration, /enable row level security/i);
   assert.match(migration, /Quote request limit reached/i);
