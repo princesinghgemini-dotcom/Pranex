@@ -29,6 +29,9 @@ test("inventory screen provides sign-in, tenant-scoped live batches, and receipt
   assert.match(component, /\/api\/inventory\/batches/);
   assert.match(component, /\/api\/inventory\/receipts/);
   assert.match(component, /crypto\.randomUUID\(\)/);
+  assert.match(component, /pendingReceiptKey \|\| crypto\.randomUUID\(\)/);
+  assert.match(component, /will reuse the same idempotency key/);
+  assert.match(component, /Refresh batches/);
   assert.match(component, /Sign out/);
   assert.match(component, /local storage/i);
   assert.match(component, /database membership and role/);
