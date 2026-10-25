@@ -52,6 +52,10 @@ declare
   v_uid uuid := auth.uid();
   v_org_id uuid;
   v_movement_id uuid;
+  v_existing_batch_id uuid;
+  v_existing_quantity integer;
+  v_existing_reference text;
+  v_existing_notes text;
 begin
   if v_uid is null then
     raise exception 'Authentication required' using errcode = '28000';
@@ -88,12 +92,19 @@ begin
     raise exception 'Organization administrator permission required' using errcode = '42501';
   end if;
 
-  select im.id into v_movement_id
+  select im.id, im.batch_id, im.quantity_delta, im.reference, im.notes
+    into v_movement_id, v_existing_batch_id, v_existing_quantity, v_existing_reference, v_existing_notes
   from public.inventory_movements im
   where im.organization_id = v_org_id
     and im.idempotency_key = p_idempotency_key;
 
   if v_movement_id is not null then
+    if v_existing_batch_id <> p_batch_id
+      or v_existing_quantity <> p_quantity
+      or v_existing_reference is distinct from nullif(trim(p_reference), '')
+      or v_existing_notes is distinct from nullif(trim(p_notes), '') then
+      raise exception 'Idempotency key reused with different receipt parameters' using errcode = '22023';
+    end if;
     return v_movement_id;
   end if;
 
