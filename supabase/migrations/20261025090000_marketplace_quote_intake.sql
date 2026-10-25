@@ -1,5 +1,7 @@
 -- Public buyer quote intake with constrained fields, rate limits, and no public read access.
+create schema if not exists extensions;
 create extension if not exists pgcrypto with schema extensions;
+alter extension pgcrypto set schema extensions;
 create table if not exists public.marketplace_quote_requests (
   id uuid primary key default gen_random_uuid(),
   request_key uuid not null unique,
