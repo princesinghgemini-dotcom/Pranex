@@ -29,3 +29,20 @@ test("marketplace is responsive and accessible at key navigation points", () => 
 test("product enquiry controls lead to the quote workflow, not a dead button", () => {
   assert.match(page, /href="\/marketplace\/quotes" aria-label=\{"Enquire about "\+product\.name\}/);
 });
+
+const quotePage = await readFile(new URL("../app/marketplace/quotes/page.tsx", import.meta.url), "utf8");
+const cartPage = await readFile(new URL("../app/marketplace/cart/page.tsx", import.meta.url), "utf8");
+
+test("marketplace search filters the sample catalogue and preserves the search term", () => {
+  assert.match(page, /searchParams: Promise<\{ q\?: string \}>/);
+  assert.match(page, /visibleProducts = query \? products\.filter/);
+  assert.match(page, /defaultValue=\{params\.q \?\? ""\}/);
+  assert.match(page, /No matching sample products found/);
+});
+
+test("quote and cart routes explain which commerce actions are not connected", () => {
+  assert.match(quotePage, /does not send or save your information/i);
+  assert.match(quotePage, /Submission unavailable in preview/);
+  assert.match(quotePage, /Supplier matching, secure submission, quote tracking and notifications require backend integration/i);
+  assert.match(cartPage, /Cart persistence, stock checks, shipping estimates and checkout are not connected yet/i);
+});
