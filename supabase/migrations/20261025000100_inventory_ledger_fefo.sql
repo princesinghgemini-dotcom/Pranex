@@ -129,7 +129,7 @@ create or replace function public.record_inventory_receipt(
 language plpgsql
 security definer
 set search_path = ''
-as $
+as $receipt$
 declare
   v_batch_id uuid;
   v_uid uuid := auth.uid();
@@ -200,7 +200,7 @@ begin
 
   return v_batch_id;
 end;
-$$;
+$receipt$;
 
 revoke all on function public.record_inventory_receipt(uuid,text,text,text,integer,date,text,text) from public, anon;
 grant execute on function public.record_inventory_receipt(uuid,text,text,text,integer,date,text,text) to authenticated;
