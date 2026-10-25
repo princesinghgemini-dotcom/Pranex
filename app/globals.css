@@ -37,3 +37,6 @@
 
 /* Quote submission interaction states */
 .quote-submit{width:100%;justify-content:center;border:0;cursor:pointer;font:700 11px "DM Sans",sans-serif}.quote-submit:disabled{opacity:.65;cursor:wait}.quote-form-status{border-radius:7px;padding:12px;font-size:11px;line-height:1.6;margin:0}.quote-form-status.success{background:#eaf6ed;border:1px solid #c9e8d0;color:#205f36}.quote-form-status.error{background:#fff1ef;border:1px solid #f2d0ca;color:#8e3025}.quote-honeypot{position:absolute!important;left:-10000px!important;top:auto!important;width:1px!important;height:1px!important;overflow:hidden!important}
+
+
+.quote-consent{display:flex!important;grid-template-columns:auto 1fr!important;align-items:start;gap:9px!important;font-weight:500!important;line-height:1.6}.quote-consent input{width:15px!important;height:15px;margin-top:2px;accent-color:#2d744b}.quote-consent span{font-size:10px;color:#5c7061}
