@@ -28,9 +28,9 @@ export default function Home() {
       <nav aria-label="Workspace navigation">
         <a className="active" href="#overview"><span>◫</span> Overview</a>
         <Link href="/inventory"><span>▦</span> Inventory</Link>
-        <a href="#modules"><span>◇</span> Product catalogue</a>
+        <Link href="/catalogue"><span>◇</span> Product catalogue</Link>
         <a href="#modules"><span>⇄</span> Orders &amp; fulfilment</a>
-        <a href="#modules"><span>✓</span> Compliance reviews</a>
+        <Link href="/catalogue"><span>✓</span> Compliance reviews</Link>
       </nav>
       <p className="nav-label">MANAGEMENT</p>
       <nav aria-label="Management navigation">
