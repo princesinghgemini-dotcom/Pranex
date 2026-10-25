@@ -35,3 +35,25 @@ test("batch balance derives from append-only movement deltas", () => {
   assert.match(migration, /create or replace view public\.inventory_batch_balances\s+with \(security_invoker = true\)/i);
   assert.match(migration, /coalesce\(sum\(m\.quantity_delta\), 0\)::bigint as on_hand/i);
 });
+
+test("receipt and allocation idempotency are serialized and parameter-bound", () => {
+  assert.match(migration, /pg_advisory_xact_lock\(hashtextextended\(p_organization_id::text \|\| ':' \|\| p_idempotency_key, 0\)\)/i);
+  assert.match(migration, /Idempotency key reused with different receipt parameters/i);
+  assert.match(migration, /inventory_allocation_requests/i);
+  assert.match(migration, /Idempotency key reused with different allocation parameters/i);
+});
+
+test("FEFO allocation locks batches, excludes expired lots, and refuses insufficient stock", () => {
+  assert.match(migration, /function public\.allocate_inventory_fefo/i);
+  assert.match(migration, /security definer\s+set search_path = ''[\s\S]*?as \$\$/i);
+  assert.match(migration, /pg_advisory_xact_lock\(hashtextextended\(p_organization_id::text \|\| ':' \|\| lower\(trim\(p_sku\)\), 0\)\)/i);
+  assert.match(migration, /for update/i);
+  assert.match(migration, /b\.expires_on is null or b\.expires_on >= current_date/i);
+  assert.match(migration, /Insufficient non-expired stock/i);
+  assert.match(migration, /grant execute on function public\.allocate_inventory_fefo[\s\S]*to authenticated/i);
+});
+
+test("batch writes are only available through the validated RPC", () => {
+  assert.match(migration, /No direct client INSERT grant on inventory_batches/i);
+  assert.doesNotMatch(migration, /grant insert \(organization_id, sku, product_name, batch_code, expires_on, received_at, created_by\)\s+on public\.inventory_batches to authenticated/i);
+});
