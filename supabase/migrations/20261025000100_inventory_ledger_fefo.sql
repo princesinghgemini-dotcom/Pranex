@@ -166,6 +166,7 @@ begin
         join public.inventory_movements m on m.organization_id=b.organization_id and m.batch_id=b.id
         where m.organization_id=p_organization_id and m.idempotency_key=p_idempotency_key
           and b.sku=trim(p_sku) and b.batch_code=trim(p_batch_code)
+          and b.product_name=trim(p_product_name) and m.reference is not distinct from p_reference
           and m.quantity_delta=p_quantity and b.expires_on is not distinct from p_expires_on
       ) then
         raise exception 'Idempotency key reused with different receipt parameters' using errcode = '22023';
@@ -177,9 +178,21 @@ begin
   insert into public.inventory_batches
     (organization_id, sku, product_name, batch_code, expires_on, created_by)
   values (p_organization_id, trim(p_sku), trim(p_product_name), trim(p_batch_code), p_expires_on, v_uid)
-  on conflict (organization_id, sku, batch_code)
-  do update set product_name = excluded.product_name, expires_on = excluded.expires_on
+  on conflict (organization_id, sku, batch_code) do nothing
   returning id into v_batch_id;
+
+  if v_batch_id is null then
+    select b.id into v_batch_id from public.inventory_batches b
+    where b.organization_id=p_organization_id and b.sku=trim(p_sku)
+      and b.batch_code=trim(p_batch_code)
+      and b.product_name=trim(p_product_name)
+      and b.expires_on is not distinct from p_expires_on
+    for update;
+    if v_batch_id is null then
+      raise exception 'Existing batch metadata differs; use a new batch code for changed expiry or product details'
+        using errcode = '23514';
+    end if;
+  end if;
 
   insert into public.inventory_movements
     (organization_id, batch_id, movement_type, quantity_delta, reference, idempotency_key, created_by)
