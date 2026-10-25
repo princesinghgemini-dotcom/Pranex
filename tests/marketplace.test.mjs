@@ -20,7 +20,7 @@ test("catalogue clearly distinguishes demo data from verified live listings", ()
   assert.match(page, /Demo listings are hidden while live catalogue mode is enabled|demonstration content, not verified offers or live inventory/i);
   assert.match(page, /mode: "unavailable"/);
   assert.match(page, /async function getCatalog/);
-  assert.match(page, /status.*eq\\.approved/);
+  assert.ok(page.includes('url.searchParams.set("status", "eq.approved")'));
 });
 
 test("marketplace navigation and layouts include responsive and accessible affordances", () => {
