@@ -57,7 +57,6 @@ export default function InventoryOperations() {
       setAccessToken("");
       setTokenExpiresAt(null);
       setBatches([]);
-      setPendingReceiptKey("");
       setStatus({ kind: "info", message: "Your inventory session expired. Sign in again to continue." });
     }, delay);
     return () => window.clearTimeout(timer);
