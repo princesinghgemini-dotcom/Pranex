@@ -2,7 +2,7 @@
 -- This migration deliberately reuses product_batches/manufacturer_org_id and org_members;
 -- it does not create a parallel organizations or membership model.
 
-create table if not exists public.inventory_movements (
+create table if not exists public.stock_movements (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null references public.organizations(id) on delete restrict,
   batch_id uuid not null references public.product_batches(id) on delete restrict,
@@ -13,18 +13,18 @@ create table if not exists public.inventory_movements (
   notes text check (notes is null or length(notes) <= 500),
   created_by uuid not null default auth.uid() references auth.users(id),
   created_at timestamptz not null default now(),
-  constraint inventory_movements_idempotency_unique unique (organization_id, idempotency_key)
+  constraint stock_movements_idempotency_unique unique (organization_id, idempotency_key)
 );
 
-create index if not exists inventory_movements_org_created_idx
-  on public.inventory_movements (organization_id, created_at desc);
-create index if not exists inventory_movements_batch_created_idx
-  on public.inventory_movements (batch_id, created_at desc);
+create index if not exists stock_movements_org_created_idx
+  on public.stock_movements (organization_id, created_at desc);
+create index if not exists stock_movements_batch_created_idx
+  on public.stock_movements (batch_id, created_at desc);
 
-alter table public.inventory_movements enable row level security;
+alter table public.stock_movements enable row level security;
 
-drop policy if exists inventory_movements_read_member on public.inventory_movements;
-create policy inventory_movements_read_member on public.inventory_movements
+drop policy if exists stock_movements_read_member on public.stock_movements;
+create policy stock_movements_read_member on public.stock_movements
   for select to authenticated using (
     exists (
       select 1 from public.org_members m
@@ -34,10 +34,10 @@ create policy inventory_movements_read_member on public.inventory_movements
     )
   );
 
-revoke all on public.inventory_movements from public, anon, authenticated;
-grant select on public.inventory_movements to authenticated;
+revoke all on public.stock_movements from public, anon, authenticated;
+grant select on public.stock_movements to authenticated;
 
-create or replace function public.record_inventory_receipt(
+create or replace function public.record_product_batch_receipt(
   p_batch_id uuid,
   p_quantity integer,
   p_idempotency_key text,
@@ -94,7 +94,7 @@ begin
 
   select im.id, im.batch_id, im.quantity_delta, im.reference, im.notes
     into v_movement_id, v_existing_batch_id, v_existing_quantity, v_existing_reference, v_existing_notes
-  from public.inventory_movements im
+  from public.stock_movements im
   where im.organization_id = v_org_id
     and im.idempotency_key = p_idempotency_key;
 
@@ -108,7 +108,7 @@ begin
     return v_movement_id;
   end if;
 
-  insert into public.inventory_movements (
+  insert into public.stock_movements (
     organization_id, batch_id, movement_type, quantity_delta,
     reference, idempotency_key, notes, created_by
   ) values (
@@ -137,8 +137,8 @@ begin
 end;
 $receipt$;
 
-revoke all on function public.record_inventory_receipt(uuid, integer, text, text, text) from public, anon;
-grant execute on function public.record_inventory_receipt(uuid, integer, text, text, text) to authenticated;
+revoke all on function public.record_product_batch_receipt(uuid, integer, text, text, text) from public, anon;
+grant execute on function public.record_product_batch_receipt(uuid, integer, text, text, text) to authenticated;
 
-comment on table public.inventory_movements is
+comment on table public.stock_movements is
   'Append-only tenant-scoped stock movement ledger. Writes are permitted only through validated security-definer RPCs.';
