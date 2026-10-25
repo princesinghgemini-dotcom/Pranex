@@ -73,3 +73,12 @@ test("production-schema inventory ledger reuses existing tenant tables and block
   assert.match(ledger, /insert into public\.audit_logs/i);
   assert.match(ledger, /grant execute on function public\.record_product_batch_receipt[\s\S]*to authenticated/i);
 });
+
+
+test("receipt concurrency migration serializes idempotency keys within a tenant", async () => {
+  const migration = await readFile(new URL("../supabase/migrations/20261025130000_inventory_receipt_concurrency.sql", import.meta.url), "utf8");
+  assert.match(migration, /pg_advisory_xact_lock\s*\(/i);
+  assert.match(migration, /v_org_id::text \|\| ':' \|\| p_idempotency_key/i);
+  assert.match(migration, /Idempotency key reused with different receipt parameters/i);
+  assert.match(migration, /revoke all on function public\.record_product_batch_receipt[\s\S]*from public, anon/i);
+});
