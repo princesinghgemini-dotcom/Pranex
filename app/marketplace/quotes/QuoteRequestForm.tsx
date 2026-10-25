@@ -38,7 +38,7 @@ export default function QuoteRequestForm() {
           unit: data.get("unit"),
           delivery: data.get("delivery"),
           notes: data.get("notes"),
-          website: data.get("website"),
+          website: data.get("website"),\n          consent: data.get("consent") === "on",
         }),
       });
       const result = await response.json() as { ok?: boolean; error?: string; requestId?: string | null };
@@ -70,7 +70,7 @@ export default function QuoteRequestForm() {
     <div className="quote-two-col"><label>Estimated quantity *<input name="quantity" type="number" min={1} max={10000000} step={1} placeholder="e.g. 50" required /></label><label>Unit<select name="unit" defaultValue="packs"><option value="packs">Packs</option><option value="units">Units</option><option value="cartons">Cartons</option><option value="kg">Kilograms</option><option value="litres">Litres</option></select></label></div>
     <label>Delivery district / PIN code<input name="delivery" maxLength={160} placeholder="Where should the order be delivered?" /></label>
     <label>Additional requirements<textarea name="notes" rows={4} maxLength={1000} placeholder="Preferred pack size, target date, brand preferences…" /></label>
-    <label className="quote-honeypot" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
+    <label className="quote-consent"><input type="checkbox" name="consent" required /> <span>I agree that Pranex may use these details to respond to this quote request. *</span></label>\n    <label className="quote-honeypot" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
     <button type="submit" disabled={submitting} className="market-button primary-market quote-submit">{submitting ? "Submitting securely…" : "Submit quote request"} <span aria-hidden="true">→</span></button>
     {status && <p role={status.kind === "error" ? "alert" : "status"} className={`quote-form-status ${status.kind}`}>{status.message}</p>}
     <small className="quote-disclaimer">Your contact details are used to respond to this enquiry. Requests are stored privately and are not publicly browsable. Please do not include sensitive personal or medical information.</small>
