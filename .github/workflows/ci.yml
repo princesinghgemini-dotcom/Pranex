@@ -50,6 +50,7 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/marketplace-quote.integration.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/product-batch-ledger-fixture.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261025120000_inventory_movement_ledger.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261025130000_inventory_receipt_concurrency.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/product-batch-ledger.integration.sql
       - name: Type-check
         run: npx tsc --noEmit
