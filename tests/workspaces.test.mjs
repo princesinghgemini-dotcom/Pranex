@@ -7,7 +7,7 @@ const read = (path) => readFile(new URL(path, root), "utf8");
 
 test("workspace directory links to customer, seller, admin, and employee experiences", async () => {
   const page = await read("app/workspaces/page.tsx");
-  for (const href of ['href: "/"', 'href: "/seller"', 'href: "/admin"', 'href: "/staff"']) {
+  for (const href of ['href: "/marketplace"', 'href: "/seller"', 'href: "/admin"', 'href: "/staff"']) {
     assert.ok(page.includes(href), `missing workspace route ${href}`);
   }
 });
