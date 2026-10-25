@@ -25,6 +25,7 @@ export default function InventoryOperations() {
   const [reference, setReference] = useState("");
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
+  const [pendingReceiptKey, setPendingReceiptKey] = useState("");
   const [status, setStatus] = useState<Status | null>(null);
 
   const loadBatches = useCallback(async (token: string) => {
@@ -87,7 +88,8 @@ export default function InventoryOperations() {
     setBusy(true);
     setStatus(null);
     try {
-      const idempotencyKey = crypto.randomUUID();
+      const idempotencyKey = pendingReceiptKey || crypto.randomUUID();
+      if (!pendingReceiptKey) setPendingReceiptKey(idempotencyKey);
       const response = await fetch("/api/inventory/receipts", {
         method: "POST",
         headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
@@ -101,12 +103,17 @@ export default function InventoryOperations() {
       });
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "Receipt could not be recorded.");
+      setPendingReceiptKey("");
       setStatus({ kind: "success", message: `Receipt recorded. Movement reference: ${String(body.movementId)}` });
       setReference("");
       setNotes("");
-      await loadBatches(accessToken);
+      try {
+        await loadBatches(accessToken);
+      } catch {
+        setStatus({ kind: "info", message: `Receipt was recorded (movement ${String(body.movementId)}), but the refreshed batch list could not be loaded. Use Refresh batches to reload it.` });
+      }
     } catch (error) {
-      setStatus({ kind: "error", message: error instanceof Error ? error.message : "Receipt could not be recorded. Retry only after checking the movement ledger." });
+      setStatus({ kind: "error", message: `${error instanceof Error ? error.message : "Receipt result is uncertain."} Retry with the same details; this screen will reuse the same idempotency key.` });
     } finally {
       setBusy(false);
     }
@@ -143,13 +150,13 @@ export default function InventoryOperations() {
           </div>
           <form className="inventory-receipt-form" onSubmit={recordReceipt}>
             <h3>Record stock receipt</h3>
-            <label>Batch<select required value={selectedBatch} onChange={event => setSelectedBatch(event.target.value)} disabled={!batches.length}>
+            <label>Batch<select required value={selectedBatch} onChange={event => setSelectedBatch(event.target.value)} disabled={!batches.length || Boolean(pendingReceiptKey)}>
               {batches.map(batch => <option key={batch.id} value={batch.id}>{batch.batch_number} · {batch.stock_quantity} on hand · {batch.expires_on ?? "no expiry"}</option>)}
             </select></label>
             <label>Received quantity<input type="number" min={1} max={100000000} step={1} required value={quantity} onChange={event => setQuantity(event.target.value)} /></label>
             <label>Reference / GRN<input maxLength={160} value={reference} onChange={event => setReference(event.target.value)} placeholder="Optional goods receipt reference" /></label>
             <label>Notes<textarea maxLength={500} rows={2} value={notes} onChange={event => setNotes(event.target.value)} placeholder="Optional receipt notes" /></label>
-            <button className="primary" type="submit" disabled={busy || !batches.length}>{busy ? "Processing…" : "Record receipt"}</button>
+            <button className="primary" type="submit" disabled={busy || !batches.length}>{busy ? "Processing…" : pendingReceiptKey ? "Retry receipt safely" : "Record receipt"}</button>
           </form>
           <p className="ledger-foot">Receipt writes are accepted only for owner/admin roles by the database RPC. A receipt updates the batch quantity, appends an immutable movement and writes an audit event in one transaction.</p>
         </>
