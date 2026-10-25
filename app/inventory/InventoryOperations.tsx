@@ -77,6 +77,20 @@ export default function InventoryOperations() {
     }
   }
 
+  async function refreshBatches() {
+    if (!accessToken || busy) return;
+    setBusy(true);
+    setStatus(null);
+    try {
+      await loadBatches(accessToken);
+      setStatus({ kind: "success", message: "Inventory batches refreshed." });
+    } catch (error) {
+      setStatus({ kind: "error", message: error instanceof Error ? error.message : "Could not refresh inventory batches." });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function recordReceipt(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!accessToken || !selectedBatch) return;
@@ -136,7 +150,10 @@ export default function InventoryOperations() {
         <>
           <div className="inventory-live-toolbar">
             <span>{batches.length} batch(es) visible under your database permissions · maximum 100 shown</span>
-            <button type="button" disabled={Boolean(pendingReceiptKey)} onClick={() => { setAccessToken(""); setBatches([]); setStatus({ kind: "info", message: "Signed out of this inventory screen." }); }}>Sign out</button>
+            <div className="inventory-live-actions">
+              <button type="button" disabled={busy || Boolean(pendingReceiptKey)} onClick={refreshBatches}>{busy ? "Refreshing…" : "Refresh batches"}</button>
+              <button type="button" disabled={Boolean(pendingReceiptKey)} onClick={() => { setAccessToken(""); setBatches([]); setStatus({ kind: "info", message: "Signed out of this inventory screen." }); }}>Sign out</button>
+            </div>
           </div>
           <div className="table-wrap">
             <table><thead><tr><th>Batch</th><th>On hand</th><th>Reserved</th><th>Available</th><th>Expiry</th><th>Warehouse</th></tr></thead>
