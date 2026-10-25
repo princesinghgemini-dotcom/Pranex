@@ -58,7 +58,8 @@ export async function POST(request: Request) {
     || (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     || product.length < 2 || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 10_000_000
     || !["packs", "units", "cartons", "kg", "litres"].includes(unit)
-    || payload.consent !== true\n    || (typeof payload.delivery === "string" && payload.delivery.length > 160)
+    || payload.consent !== true
+    || (typeof payload.delivery === "string" && payload.delivery.length > 160)
     || (typeof payload.notes === "string" && payload.notes.length > 1000)) {
     return NextResponse.json({ error: "Check your name, 10-digit Indian mobile number, product, quantity and unit." }, { status: 400 });
   }
@@ -85,7 +86,8 @@ export async function POST(request: Request) {
         p_contact_email: email || null,
         p_product_request: product,
         p_quantity: quantity,
-        p_unit: unit,\n        p_contact_consent: true,
+        p_unit: unit,
+        p_contact_consent: true,
         p_delivery_location: delivery || null,
         p_notes: notes || null,
       }),
