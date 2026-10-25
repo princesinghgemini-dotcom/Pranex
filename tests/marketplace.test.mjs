@@ -65,5 +65,5 @@ test("quote form is connected to a validated API and explains the non-order boun
 });
 
 test("cart remains clearly labelled as a non-transactional preview", () => {
-  assert.match(cartPage, /Cart persistence, stock checks, shipping estimates and checkout are not connected yet/i);
+  assert.match(cartPage, /stored in this browser on this device only/i);\n  assert.match(cartPage, /No inventory is reserved, and no order or payment is created/i);\n  assert.match(cartPage, /type="number" min={1} max={9999}/);\n  assert.match(cartPage, /Clear cart/);\n  assert.match(cartPage, /Request supplier quote/);
 });
