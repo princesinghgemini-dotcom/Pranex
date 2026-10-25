@@ -14,7 +14,10 @@ const products = [
   { id: "PRX-4122", name: "Stainless Steel Milk Can", type: "Milking equipment", pack: "40 L capacity", price: "₹3,450", unit: "per unit", moq: "MOQ 2 units", initials: "40", tone: "sky", tag: "Durable pick" },
 ];
 
-export default async function MarketplacePage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {\n  const params = await searchParams;\n  const query = (params.q ?? "").trim().toLocaleLowerCase();\n  const visibleProducts = query ? products.filter((product) => [product.name, product.type, product.pack, product.id].some((value) => value.toLocaleLowerCase().includes(query))) : products;
+export default async function MarketplacePage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const params = await searchParams;
+  const query = (params.q ?? "").trim().toLocaleLowerCase();
+  const visibleProducts = query ? products.filter((product) => [product.name, product.type, product.pack, product.id].some((value) => value.toLocaleLowerCase().includes(query))) : products;
   return <main className="marketplace">
     <div className="market-topline"><span>Built for India’s dairy & livestock supply chain</span><span>Need help? <a href="mailto:support@pranex.example">Talk to our team ↗</a></span></div>
     <header className="market-header">
