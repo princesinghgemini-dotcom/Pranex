@@ -16,24 +16,64 @@ type QuotePayload = {
   website?: unknown;
 };
 
+const MAX_BODY_BYTES = 8192;
+
 const text = (value: unknown, max: number) =>
   typeof value === "string" && value.trim().length <= max ? value.trim() : "";
+
+async function readLimitedBody(request: Request): Promise<string | null> {
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > MAX_BODY_BYTES) {
+        await reader.cancel();
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(bytes);
+}
 
 export async function POST(request: Request) {
   const origin = request.headers.get("origin");
   const requestUrl = new URL(request.url);
-  if (origin && new URL(origin).origin !== requestUrl.origin) {
-    return NextResponse.json({ error: "Cross-origin submission is not allowed." }, { status: 403 });
+  if (origin) {
+    try {
+      if (new URL(origin).origin !== requestUrl.origin) {
+        return NextResponse.json({ error: "Cross-origin submission is not allowed." }, { status: 403 });
+      }
+    } catch {
+      return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
+    }
   }
 
-  const contentLength = Number(request.headers.get("content-length") ?? 0);
-  if (contentLength > 8192) {
-    return NextResponse.json({ error: "Request is too large." }, { status: 413 });
+  const rawLength = request.headers.get("content-length");
+  if (rawLength !== null && (!/^\\d+$/.test(rawLength) || Number(rawLength) > MAX_BODY_BYTES)) {
+    return NextResponse.json({ error: "Request is too large or has an invalid content length." }, { status: 413 });
   }
 
   let payload: QuotePayload;
   try {
-    payload = (await request.json()) as QuotePayload;
+    const body = await readLimitedBody(request);
+    if (body === null) {
+      return NextResponse.json({ error: "Request is too large." }, { status: 413 });
+    }
+    payload = JSON.parse(body) as QuotePayload;
   } catch {
     return NextResponse.json({ error: "Please submit a valid form." }, { status: 400 });
   }
