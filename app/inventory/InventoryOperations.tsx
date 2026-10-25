@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 
 type Batch = {
   id: string;
@@ -42,23 +42,13 @@ export default function InventoryOperations() {
   useEffect(() => {
     if (!accessToken) return;
     let active = true;
-    fetch("/api/inventory/batches", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-      cache: "no-store",
-    }).then(async response => {
-      const body = await response.json();
-      if (!response.ok) throw new Error(body.error || "Could not load inventory batches.");
-      if (!active) return;
-      const rows = Array.isArray(body.batches) ? (body.batches as Batch[]) : [];
-      setBatches(rows);
-      setSelectedBatch(current => rows.some(row => row.id === current) ? current : (rows[0]?.id ?? ""));
-    }).catch(error => {
+    loadBatches(accessToken).catch(error => {
       if (active) setStatus({ kind: "error", message: error instanceof Error ? error.message : "Could not load inventory batches." });
     });
     return () => { active = false; };
-  }, [accessToken]);
+  }, [accessToken, loadBatches]);
 
-  async function signIn(event: React.FormEvent<HTMLFormElement>) {
+    async function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
     setStatus(null);
@@ -86,7 +76,7 @@ export default function InventoryOperations() {
     }
   }
 
-  async function recordReceipt(event: React.FormEvent<HTMLFormElement>) {
+  async function recordReceipt(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!accessToken || !selectedBatch) return;
     const parsedQuantity = Number(quantity);
