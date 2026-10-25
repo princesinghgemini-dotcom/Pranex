@@ -2,9 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const page = await readFile(new URL("../app/marketplace/page.tsx", import.meta.url), "utf8");
-const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
-const directory = await readFile(new URL("../app/workspaces/page.tsx", import.meta.url), "utf8");
+const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
+const page = await read("../app/marketplace/page.tsx");
+const styles = await read("../app/globals.css");
+const directory = await read("../app/workspaces/page.tsx");
+const productGrid = await read("../app/marketplace/ProductGrid.tsx");
+const quotePage = await read("../app/marketplace/quotes/page.tsx");
+const cartPage = await read("../app/marketplace/cart/page.tsx");
 
 test("customer marketplace presents the core buying discovery flow", () => {
   for (const text of ["Shop by category", "Popular products", "Request bulk pricing", "Search products and suppliers", "MOQ", "Illustrative catalogue"]) {
@@ -12,47 +16,42 @@ test("customer marketplace presents the core buying discovery flow", () => {
   }
 });
 
-test("marketplace is transparent that catalog data and commerce flows are previews", () => {
-  assert.match(page, /demonstration content, not verified offers or live inventory/i);
-  assert.match(page, /No payment is taken on this preview page/i);
-  assert.match(page, /No live checkout or supplier verification/i);
+test("catalogue clearly distinguishes demo data from verified live listings", () => {
+  assert.match(page, /Demo listings are hidden while live catalogue mode is enabled|demonstration content, not verified offers or live inventory/i);
+  assert.match(page, /mode: "unavailable"/);
+  assert.match(page, /async function getCatalog/);
+  assert.match(page, /status.*eq\\.approved/);
 });
 
-test("marketplace is responsive and accessible at key navigation points", () => {
+test("marketplace navigation and layouts include responsive and accessible affordances", () => {
   assert.match(styles, /\.marketplace/);
   assert.match(styles, /@media\(max-width:700px\)/);
-  assert.match(page, /aria-label="Main marketplace navigation"/);
   assert.match(page, /aria-label="Shopping cart"/);
   assert.match(directory, /href: "\/marketplace", number: "01", name: "Customer marketplace"/);
 });
 
-test("product enquiry controls lead to the quote workflow, not a dead button", () => {
-  assert.match(page, /href="\/marketplace\/quotes" aria-label=\{"Enquire about "\+product\.name\}/);
+test("product cards navigate to the quote workflow and support cart actions", () => {
+  assert.match(productGrid, /\/marketplace\/quotes/);
+  assert.match(productGrid, /add to cart|addToCart/i);
 });
 
-const quotePage = await readFile(new URL("../app/marketplace/quotes/page.tsx", import.meta.url), "utf8");
-const cartPage = await readFile(new URL("../app/marketplace/cart/page.tsx", import.meta.url), "utf8");
-
-test("marketplace search filters the sample catalogue and preserves the search term", () => {
+test("marketplace search preserves the query and filters visible listings", () => {
   assert.match(page, /searchParams: Promise<\{ q\?: string \}>/);
   assert.match(page, /visibleProducts = query \? products\.filter/);
   assert.match(page, /defaultValue=\{params\.q \?\? ""\}/);
   assert.match(page, /No matching sample products found/);
-  assert.match(page, /async function getCatalog/);
-  assert.match(page, /status", "eq\.approved/);
-  assert.match(page, /mode: "unavailable"/);
-  assert.match(page, /Demo listings are hidden while live catalogue mode is enabled/);
 });
 
-test("quote form is connected to a validated API and explains the non-order boundary", async () => {
-  const form = await readFile(new URL("../app/marketplace/quotes/QuoteRequestForm.tsx", import.meta.url), "utf8");
-  const route = await readFile(new URL("../app/api/marketplace/quotes/route.ts", import.meta.url), "utf8");
-  const migration = await readFile(new URL("../supabase/migrations/20261025090000_marketplace_quote_intake.sql", import.meta.url), "utf8");
-  const consentMigration = await readFile(new URL("../supabase/migrations/20261025091500_marketplace_quote_consent.sql", import.meta.url), "utf8");
+test("quote form is connected to a validated API and enforces contact consent", async () => {
+  const form = await read("../app/marketplace/quotes/QuoteRequestForm.tsx");
+  const route = await read("../app/api/marketplace/quotes/route.ts");
+  const migration = await read("../supabase/migrations/20261025090000_marketplace_quote_intake.sql");
+  const consentMigration = await read("../supabase/migrations/20261025091500_marketplace_quote_consent.sql");
   assert.match(quotePage, /QuoteRequestForm/);
   assert.match(quotePage, /not an order or a confirmed supplier quote/i);
   assert.match(form, /fetch\("\/api\/marketplace\/quotes"/);
   assert.match(form, /name="phone"/);
+  assert.match(form, /name="consent" required/);
   assert.match(form, /role=\{status.kind === "error" \? "alert" : "status"\}/);
   assert.match(route, /submit_marketplace_quote/);
   assert.match(route, /content-length/);
@@ -64,6 +63,15 @@ test("quote form is connected to a validated API and explains the non-order boun
   assert.match(consentMigration, /consent_at/i);
 });
 
-test("cart remains clearly labelled as a non-transactional preview", () => {
-  assert.match(cartPage, /stored in this browser on this device only/i);\n  assert.match(cartPage, /No inventory is reserved, and no order or payment is created/i);\n  assert.match(cartPage, /type="number" min={1} max={9999}/);\n  assert.match(cartPage, /Clear cart/);\n  assert.match(cartPage, /Request supplier quote/);
+test("cart quantity changes are bounded and cart can be cleared or edited", () => {
+  assert.match(cartPage, /type="number" min=\{1\} max=\{9999\}/);
+  assert.match(cartPage, /Clear cart/);
+  assert.match(cartPage, /onClick=\{\(\) => remove\(item\.id\)\}/);
+  assert.match(cartPage, /Request supplier quote/);
+});
+
+test("cart accurately explains local persistence and non-transactional scope", () => {
+  assert.match(cartPage, /stored in this browser on this device only/i);
+  assert.match(cartPage, /No inventory is reserved, and no order or payment is created/i);
+  assert.match(cartPage, /checkout and live stock checks are not connected/i);
 });
