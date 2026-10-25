@@ -40,9 +40,9 @@ begin
     if sqlerrm <> 'Invalid quote request fields or missing contact consent' then raise; end if;
   end;
 end;
-$;
+$$;
 
-do $
+do $$
 begin
   begin
     perform public.submit_marketplace_quote(gen_random_uuid(), 'Pranex Buyer', '9876543211', null,
@@ -52,6 +52,6 @@ begin
     if sqlerrm <> 'Invalid quote request fields or missing contact consent' then raise; end if;
   end;
 end;
-$;
+$$;
 
 rollback;
