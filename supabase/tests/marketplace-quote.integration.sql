@@ -37,9 +37,21 @@ begin
       'Mineral mixture', 8, 'packs', true, null, null);
     raise exception 'Invalid mobile number was accepted';
   exception when sqlstate '22023' then
-    if sqlerrm <> 'Invalid quote request fields' then raise; end if;
+    if sqlerrm <> 'Invalid quote request fields or missing contact consent' then raise; end if;
   end;
 end;
-$$;
+$;
+
+do $
+begin
+  begin
+    perform public.submit_marketplace_quote(gen_random_uuid(), 'Pranex Buyer', '9876543211', null,
+      'Mineral mixture', 8, 'packs', false, null, null);
+    raise exception 'Missing consent was accepted';
+  exception when sqlstate '22023' then
+    if sqlerrm <> 'Invalid quote request fields or missing contact consent' then raise; end if;
+  end;
+end;
+$;
 
 rollback;
