@@ -33,3 +33,7 @@
 @media(max-width:700px){.quote-main,.cart-main{padding:35px 16px 48px}.quote-main>h1,.cart-main>h1{font-size:30px}.quote-layout{grid-template-columns:1fr;gap:14px;margin-top:22px}.quote-form-card,.quote-side-card{padding:18px}.quote-two-col{gap:9px}.cart-empty{padding:35px 18px}.cart-empty h2{font-size:18px}.quote-page .market-header,.cart-page .market-header{padding:14px 16px}}
 
 .market-no-results{display:grid;gap:8px;justify-items:center;padding:35px 15px;border:1px dashed #d8e4da;border-radius:10px;background:#fff;text-align:center;color:#506b58}.market-no-results b{font:700 13px Manrope,sans-serif}.market-no-results span{font-size:10px;color:#87958a}.market-no-results a{font-size:10px;color:#28744d;font-weight:700}
+
+
+/* Quote submission interaction states */
+.quote-submit{width:100%;justify-content:center;border:0;cursor:pointer;font:700 11px "DM Sans",sans-serif}.quote-submit:disabled{opacity:.65;cursor:wait}.quote-form-status{border-radius:7px;padding:12px;font-size:11px;line-height:1.6;margin:0}.quote-form-status.success{background:#eaf6ed;border:1px solid #c9e8d0;color:#205f36}.quote-form-status.error{background:#fff1ef;border:1px solid #f2d0ca;color:#8e3025}.quote-honeypot{position:absolute!important;left:-10000px!important;top:auto!important;width:1px!important;height:1px!important;overflow:hidden!important}
