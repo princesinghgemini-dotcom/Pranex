@@ -55,6 +55,6 @@ test("FEFO allocation locks batches, excludes expired lots, and refuses insuffic
 
 test("batch writes are only available through the validated RPC", () => {
   assert.match(migration, /No direct client INSERT grant on inventory_batches/i);
-  assert.match(migration, /revoke insert, update, delete, truncate, references, trigger on public\\.inventory_batches from anon, authenticated/i);
+  assert.match(migration, /revoke insert, update, delete, truncate, references, trigger on public\.inventory_batches from anon, authenticated/i);
   assert.doesNotMatch(migration, /grant insert \(organization_id, sku, product_name, batch_code, expires_on, received_at, created_by\)\s+on public\.inventory_batches to authenticated/i);
 });
