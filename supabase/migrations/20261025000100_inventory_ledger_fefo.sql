@@ -114,8 +114,10 @@ group by b.organization_id, b.id, b.sku, b.product_name, b.batch_code, b.expires
 
 grant select on public.inventory_batch_balances to authenticated;
 
--- Receipts are recorded through a transaction-safe RPC. No client-supplied
--- user id or tenant role is trusted; membership is checked against auth.uid().
+-- Receipts use a narrowly scoped SECURITY DEFINER RPC because direct client
+-- writes to the append-only movement ledger are revoked. The function pins an
+-- empty search_path, fully qualifies relations, derives identity from auth.uid(),
+-- and verifies manager membership before writing.
 create or replace function public.record_inventory_receipt(
   p_organization_id uuid,
   p_sku text,
@@ -127,9 +129,9 @@ create or replace function public.record_inventory_receipt(
   p_idempotency_key text default null
 ) returns uuid
 language plpgsql
-security invoker
+security definer
 set search_path = ''
-as $$
+as $
 declare
   v_batch_id uuid;
   v_uid uuid := auth.uid();
