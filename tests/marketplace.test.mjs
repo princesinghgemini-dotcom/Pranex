@@ -40,9 +40,23 @@ test("marketplace search filters the sample catalogue and preserves the search t
   assert.match(page, /No matching sample products found/);
 });
 
-test("quote and cart routes explain which commerce actions are not connected", () => {
-  assert.match(quotePage, /does not send or save your information/i);
-  assert.match(quotePage, /Submission unavailable in preview/);
-  assert.match(quotePage, /Supplier matching, secure submission, quote tracking and notifications require backend integration/i);
+test("quote form is connected to a validated API and explains the non-order boundary", async () => {
+  const form = await readFile(new URL("../app/marketplace/quotes/QuoteRequestForm.tsx", import.meta.url), "utf8");
+  const route = await readFile(new URL("../app/api/marketplace/quotes/route.ts", import.meta.url), "utf8");
+  const migration = await readFile(new URL("../supabase/migrations/20261025090000_marketplace_quote_intake.sql", import.meta.url), "utf8");
+  assert.match(quotePage, /QuoteRequestForm/);
+  assert.match(quotePage, /not an order or a confirmed supplier quote/i);
+  assert.match(form, /fetch\("\/api\/marketplace\/quotes"/);
+  assert.match(form, /name="phone"/);
+  assert.match(form, /role=\{status.kind === "error" \? "alert" : "status"\}/);
+  assert.match(route, /submit_marketplace_quote/);
+  assert.match(route, /content-length/);
+  assert.match(route, /Cross-origin submission is not allowed/);
+  assert.match(migration, /enable row level security/i);
+  assert.match(migration, /Quote request limit reached/i);
+  assert.match(migration, /revoke all on public.marketplace_quote_requests from public, anon, authenticated/i);
+});
+
+test("cart remains clearly labelled as a non-transactional preview", () => {
   assert.match(cartPage, /Cart persistence, stock checks, shipping estimates and checkout are not connected yet/i);
 });
