@@ -13,17 +13,17 @@ test("inventory tables are tenant-scoped and RLS protected", () => {
 });
 
 test("inventory movement history cannot be updated or deleted by client roles", () => {
-  assert.match(migration, /revoke insert, update, delete, truncate, references, trigger on public\.stock_movements from anon, authenticated/i);
+  assert.match(migration, /revoke insert, update, delete, truncate, references, trigger on public\.inventory_movements from anon, authenticated/i);
   assert.match(migration, /create policy inventory_movements_read_member/i);
 });
 
 test("receipt RPC uses a narrow privileged boundary and authenticates tenant membership", () => {
-  assert.match(migration, /function public\.record_product_batch_receipt/i);
+  assert.match(migration, /function public\.record_inventory_receipt/i);
   assert.match(migration, /security definer\s+set search_path = ''/i);
   assert.match(migration, /v_uid uuid := auth\.uid\(\)/i);
   assert.match(migration, /m\.role in \('owner','admin','inventory_manager'\)/i);
-  assert.match(migration, /revoke all on function public\.record_product_batch_receipt[\s\S]*from public, anon/i);
-  assert.match(migration, /grant execute on function public\.record_product_batch_receipt[\s\S]*to authenticated/i);
+  assert.match(migration, /revoke all on function public\.record_inventory_receipt[\s\S]*from public, anon/i);
+  assert.match(migration, /grant execute on function public\.record_inventory_receipt[\s\S]*to authenticated/i);
 });
 
 test("receipt quantity and expiry are validated", () => {
