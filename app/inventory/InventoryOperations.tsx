@@ -19,6 +19,7 @@ export default function InventoryOperations() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [accessToken, setAccessToken] = useState("");
+  const [tokenExpiresAt, setTokenExpiresAt] = useState<number | null>(null);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [selectedBatch, setSelectedBatch] = useState("");
   const [quantity, setQuantity] = useState("1");
@@ -49,6 +50,19 @@ export default function InventoryOperations() {
     return () => { active = false; };
   }, [accessToken, loadBatches]);
 
+  useEffect(() => {
+    if (!accessToken || tokenExpiresAt === null) return;
+    const delay = Math.max(0, tokenExpiresAt - Date.now());
+    const timer = window.setTimeout(() => {
+      setAccessToken("");
+      setTokenExpiresAt(null);
+      setBatches([]);
+      setPendingReceiptKey("");
+      setStatus({ kind: "info", message: "Your inventory session expired. Sign in again to continue." });
+    }, delay);
+    return () => window.clearTimeout(timer);
+  }, [accessToken, tokenExpiresAt]);
+
     async function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
@@ -67,6 +81,10 @@ export default function InventoryOperations() {
       if (!response.ok || typeof body.access_token !== "string") {
         throw new Error("Sign-in failed. Check your credentials or confirm your account is enabled.");
       }
+      if (typeof body.expires_in !== "number" || !Number.isFinite(body.expires_in) || body.expires_in <= 0) {
+        throw new Error("Sign-in succeeded but the session expiry was invalid. Please try again.");
+      }
+      setTokenExpiresAt(Date.now() + body.expires_in * 1000 - 15_000);
       setAccessToken(body.access_token);
       setPassword("");
       setStatus({ kind: "success", message: "Signed in. Inventory access is limited by your database membership and role." });
@@ -152,7 +170,7 @@ export default function InventoryOperations() {
             <span>{batches.length} batch(es) visible under your database permissions · maximum 100 shown</span>
             <div className="inventory-live-actions">
               <button type="button" disabled={busy || Boolean(pendingReceiptKey)} onClick={refreshBatches}>{busy ? "Refreshing…" : "Refresh batches"}</button>
-              <button type="button" disabled={Boolean(pendingReceiptKey)} onClick={() => { setAccessToken(""); setBatches([]); setStatus({ kind: "info", message: "Signed out of this inventory screen." }); }}>Sign out</button>
+              <button type="button" disabled={Boolean(pendingReceiptKey)} onClick={() => { setAccessToken(""); setTokenExpiresAt(null); setBatches([]); setPendingReceiptKey(""); setStatus({ kind: "info", message: "Signed out of this inventory screen." }); }}>Sign out</button>
             </div>
           </div>
           <div className="table-wrap">
