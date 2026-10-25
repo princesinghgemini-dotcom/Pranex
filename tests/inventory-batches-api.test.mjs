@@ -34,5 +34,8 @@ test("inventory screen provides sign-in, tenant-scoped live batches, and receipt
   assert.match(component, /Refresh batches/);
   assert.match(component, /Sign out/);
   assert.match(component, /local storage/i);
-  assert.match(component, /database membership and role/);
+  assert.match(component, /body\.expires_in/);
+  assert.match(component, /tokenExpiresAt - Date\.now\(\)/);
+  assert.match(component, /Your inventory session expired/);
+  assert.match(component, /Preserve retry key/);
 });
