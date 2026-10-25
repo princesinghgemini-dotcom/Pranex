@@ -63,5 +63,5 @@ begin
 end;
 $quote$;
 
-revoke all on function public.submit_marketplace_quote(uuid,text,text,text,text,integer,text,text,boolean,text,text) from public;
-grant execute on function public.submit_marketplace_quote(uuid,text,text,text,text,integer,text,text,boolean,text,text) to anon, authenticated;
+revoke all on function public.submit_marketplace_quote(uuid,text,text,text,text,integer,text,boolean,text,text) from public;
+grant execute on function public.submit_marketplace_quote(uuid,text,text,text,text,integer,text,boolean,text,text) to anon, authenticated;
