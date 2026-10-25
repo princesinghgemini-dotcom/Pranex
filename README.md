@@ -59,4 +59,9 @@ Configure these server environment variables in a secret manager or the deployme
 - `SHIPROCKET_EMAIL`: Shiprocket API-user email created under Settings → API.
 - `SHIPROCKET_PASSWORD`: corresponding API-user password.
 
-The current implementation is an integration foundation only: no Shiprocket credentials are configured in this repository, and no live account calls, order creation, courier assignment, pickup booking, label generation, webhook processing, or reconciliation have been enabled. Before production, add authenticated role checks, order ownership checks, durable idempotency, webhook signature/verification strategy, retry policy, event audit logs, and sandbox/live end-to-end tests. A successful provider API response must not by itself mark an order paid or delivered.
+The current implementation is an integration foundation only: no Shiprocket credentials are configured in this repository. Live account calls, order creation, courier assignment, pickup booking, label generation, webhook processing, and reconciliation have not been enabled. Before production, add authenticated role checks, order ownership checks, durable idempotency, webhook signature/verification strategy, retry policy, event audit logs, and sandbox/live end-to-end tests. A successful provider API response must not by itself mark an order paid or delivered.
+
+
+## Admin configuration centre
+
+The `/admin/configuration` route provides an editable configuration-draft UI for marketplace identity, seller and listing approval gates, invoice/MOQ display policy, shipping provider selection, COD policy, return window, platform fee, and low-stock threshold. It is explicitly preview-only: changes are held in client memory and do not persist or alter live behaviour. Production configuration must be wired to a server-side settings service with authenticated platform-admin authorization, schema validation, tenant/environment scoping, audit history, and tests before enabling a real Save operation.
