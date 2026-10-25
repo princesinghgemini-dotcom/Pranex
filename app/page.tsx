@@ -34,9 +34,9 @@ export default function Home() {
       </nav>
       <p className="nav-label">MANAGEMENT</p>
       <nav aria-label="Management navigation">
-        <a href="#modules"><span>▧</span> Organizations</a>
-        <a href="#modules"><span>▤</span> Reports &amp; insights</a>
-        <a href="#modules"><span>⚙</span> Settings</a>
+        <Link href="/workspaces"><span>▧</span> Organizations &amp; workspaces</Link>
+        <a href="#modules"><span>▤</span> Reports &amp; insights <small className="nav-pending">Not connected</small></a>
+        <Link href="/admin/configuration"><span>⚙</span> Platform settings</Link>
       </nav>
       <div className="sidebar-bottom">
         <div className="secure"><span>●</span><div>Security foundation<small>Live access checks not connected</small></div></div>
