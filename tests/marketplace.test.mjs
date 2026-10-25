@@ -38,6 +38,10 @@ test("marketplace search filters the sample catalogue and preserves the search t
   assert.match(page, /visibleProducts = query \? products\.filter/);
   assert.match(page, /defaultValue=\{params\.q \?\? ""\}/);
   assert.match(page, /No matching sample products found/);
+  assert.match(page, /async function getCatalog/);
+  assert.match(page, /status", "eq\.approved/);
+  assert.match(page, /mode: "unavailable"/);
+  assert.match(page, /Demo listings are hidden while live catalogue mode is enabled/);
 });
 
 test("quote form is connected to a validated API and explains the non-order boundary", async () => {
