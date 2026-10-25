@@ -44,6 +44,7 @@ test("quote form is connected to a validated API and explains the non-order boun
   const form = await readFile(new URL("../app/marketplace/quotes/QuoteRequestForm.tsx", import.meta.url), "utf8");
   const route = await readFile(new URL("../app/api/marketplace/quotes/route.ts", import.meta.url), "utf8");
   const migration = await readFile(new URL("../supabase/migrations/20261025090000_marketplace_quote_intake.sql", import.meta.url), "utf8");
+  const consentMigration = await readFile(new URL("../supabase/migrations/20261025091500_marketplace_quote_consent.sql", import.meta.url), "utf8");
   assert.match(quotePage, /QuoteRequestForm/);
   assert.match(quotePage, /not an order or a confirmed supplier quote/i);
   assert.match(form, /fetch\("\/api\/marketplace\/quotes"/);
@@ -55,6 +56,8 @@ test("quote form is connected to a validated API and explains the non-order boun
   assert.match(migration, /enable row level security/i);
   assert.match(migration, /Quote request limit reached/i);
   assert.match(migration, /revoke all on public.marketplace_quote_requests from public, anon, authenticated/i);
+  assert.match(consentMigration, /p_contact_consent is distinct from true/i);
+  assert.match(consentMigration, /consent_at/i);
 });
 
 test("cart remains clearly labelled as a non-transactional preview", () => {
