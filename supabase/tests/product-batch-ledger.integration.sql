@@ -15,8 +15,10 @@ insert into public.org_members(org_id, user_id, role, is_active)
 values ('20000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000002', 'purchaser', true)
 on conflict (org_id, user_id) do update set role = excluded.role, is_active = excluded.is_active;
 insert into public.product_batches(id, manufacturer_org_id, batch_number, expires_on, stock_quantity)
-values ('30000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001', 'LEDGER-TEST-01', current_date + 90, 5)
-on conflict (id) do update set stock_quantity = 5;
+values
+  ('30000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000001', 'LEDGER-TEST-01', current_date + 90, 5),
+  ('30000000-0000-4000-8000-000000000002', '20000000-0000-4000-8000-000000000001', 'LEDGER-TEST-02', current_date + 120, 3)
+on conflict (id) do update set stock_quantity = excluded.stock_quantity;
 
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000001', true);
 
@@ -57,6 +59,15 @@ begin
       '30000000-0000-4000-8000-000000000001', 8, 'receipt-test-key-0001', 'PO-TEST-1', 'initial test receipt'
     );
     raise exception 'Expected mismatched idempotency parameters to be rejected';
+  exception when sqlstate '22023' then
+    null;
+  end;
+
+  begin
+    perform public.record_product_batch_receipt(
+      '30000000-0000-4000-8000-000000000002', 7, 'receipt-test-key-0001', 'PO-TEST-1', 'initial test receipt'
+    );
+    raise exception 'Expected cross-batch idempotency key reuse to be rejected';
   exception when sqlstate '22023' then
     null;
   end;
